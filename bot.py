@@ -6,6 +6,8 @@ Simple Bot to store intros for users.
 """
 
 import logging
+from read_config import config_parser
+import hashlib
 from tinydb import TinyDB, Query
 from telegram.ext import Updater, CommandHandler
 
@@ -21,6 +23,8 @@ permission_table = db.table('permissions')
 # Create quary object for DB
 quary = Query()
 
+# Read config
+config = config_parser()
 
 def start(update, context):
     """Send a message when the command /start is issued."""
@@ -74,8 +78,9 @@ def who_is(update, context):
 def identify(update, context):
     """Allows user to identify using password"""
     username = update.message.chat.username
-    password = str(update.message.text).replace('/identify ', '')
-    if password == '':
+    password = hashlib.sha512(update.message.text.replace('/identify ', '')
+                                .encode("utf-8")).hexdigest()
+    if password == config["password"]:
         permission_table.upsert({'user': username.upper()},
                                 quary.user == username.upper(),)
         update.message.reply_text("you know what you are talking about!")
@@ -119,7 +124,7 @@ def error(update, context):
 def main():
     """Start the bot."""
     # Create the Updater object and pass it bot's token.
-    updater = Updater("",
+    updater = Updater(config["token"],
                       use_context=True)
 
     # Get the dispatcher to register handlers
