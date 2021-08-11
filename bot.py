@@ -10,6 +10,7 @@ from read_config import config_parser
 import hashlib
 from tinydb import TinyDB, Query
 from telegram.ext import Updater, CommandHandler
+import os
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -80,7 +81,12 @@ def identify(update, context):
     username = update.message.chat.username
     password = hashlib.sha512(update.message.text.replace('/identify ', '')
                                 .encode("utf-8")).hexdigest()
-    if password == config["password"]:
+    if "PASSWORD_HASH" in os.environ:
+        password_hash = os.environ["PASSWORD_HASH"]
+    else:
+        password_hash = config["password"]
+
+    if password == password_hash:
         permission_table.upsert({'user': username.upper()},
                                 quary.user == username.upper(),)
         update.message.reply_text("you know what you are talking about!")
@@ -123,8 +129,12 @@ def error(update, context):
 
 def main():
     """Start the bot."""
+    if "BOT_TOKEN" in os.environ:
+        token = os.environ["BOT_TOKEN"]
+    else:
+        token = config["token"]
     # Create the Updater object and pass it bot's token.
-    updater = Updater(config["token"],
+    updater = Updater(token,
                       use_context=True)
 
     # Get the dispatcher to register handlers

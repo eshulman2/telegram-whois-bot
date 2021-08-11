@@ -32,8 +32,11 @@ def main():
         token = os.environ["BOT_TOKEN"]
     else:
         token = input("please enter the token yourecived from BotFather: ")
-    
-    password_hash = hashlib.sha512(password.encode("utf-8")).hexdigest()
+
+    if "PASSWORD_HASH" in os.environ:
+        password = os.environ["PASSWORD_HASH"]
+    else:
+        password_hash = hashlib.sha512(password.encode("utf-8")).hexdigest()
 
     configuration = {"token": token, "password": password_hash}
 

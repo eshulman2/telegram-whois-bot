@@ -8,7 +8,6 @@ python-telegram-bot = "*"
 tinydb = "*"
 
 [dev-packages]
-tinydb = "*"
 
 [requires]
 python_version = "3.6"
