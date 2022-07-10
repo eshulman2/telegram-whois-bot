@@ -1,3 +1,3 @@
 # telegram-whois-bot
 
-if using on plain
+simple bot for saving intros in telegram groups
